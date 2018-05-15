@@ -1,6 +1,6 @@
-[submodule "induction-data"]
-	path = data/induction
-	url = https://github.com/transport-intelligence/data-samples.git
 [submodule "induction-cpp"]
 	path = src/induction
 	url = https://github.com/transport-intelligence/induction-cpp.git
+[submodule "induction-data"]
+	path = data/induction
+	url = https://github.com/transport-intelligence/data-samples.git
