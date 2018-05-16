@@ -25,6 +25,7 @@ RUN apt -y install libboost1.65-all-dev
 RUN apt -y install doxygen
 RUN apt -y install libc6-dev-i386
 RUN apt -y install libreadline-dev libgmp-dev
+RUN apt -y install flex bison
 
 # Python 2
 RUN apt -y install python python-pip python-dev python-setuptools python-wheel python-six
@@ -41,7 +42,7 @@ RUN python3 -m pip install --upgrade gcovr
 RUN wget -q -O sonar-scanner.zip https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.0.3.778-linux.zip && \
  unzip -q sonar-scanner.zip && \
  DIR=`pwd` && ln -s $DIR/sonar-scanner-3.0.3.778-linux/bin/sonar-scanner /bin && \
- rm sonar-scanner.zip
+ rm -f sonar-scanner.zip
 
 # Visualization
 RUN apt -y install graphviz
@@ -51,7 +52,9 @@ RUN apt -y install graphviz
 RUN mkdir -p /opt/scip
 COPY resources/$SCIP_TAR $SCIP_DIR
 RUN cd $SCIP_DIR && tar zxf $SCIP_TAR
-RUN cd $SCIP_DIR/scipoptsuite-$SCIP_VER make -j4 TPI=tny USRCFLAGS=-fPIC USRCXXFLAGS=-fPIC USRCPPFLAGS=-fPIC # GMP=false READLINE=false
+RUN cd $SCIP_DIR/scipoptsuite-$SCIP_VER && \
+    make -j4 TPI=tny USRCFLAGS=-fPIC USRCXXFLAGS=-fPIC USRCPPFLAGS=-fPIC install # GMP=false READLINE=false
+RUN rm -f $SCIP_DIR/$SCIP_TAR
 
 ## Google OR
 RUN mkdir -p $GOR_DIR && cd $GOR_DIR && wget "$GOR_URL/$GOR_TAR"
@@ -59,11 +62,13 @@ RUN cd $GOR_DIR && tar zxf $GOR_TAR
 
 ## OGDF (Open Graph)
 RUN mkdir -p /opt && cd /opt && git clone https://github.com/ogdf/ogdf.git && \
-    mkdir -p /opt/ogdf/build && cd /opt/ogdf/build && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=ON .. && make -j4 install
+    mkdir -p /opt/ogdf/build && cd /opt/ogdf/build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=ON .. && make -j4 install
 
 ## MiniZinc
-#RUN mkdir -p /opt/mzinc && cd /opt/mzinc && git clone https://github.com/MiniZinc/libminizinc.git && \
-#    mkdir -p /opt/mzinc/libminizinc/build && cd /opt/mzinc/libminizinc/build && cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && make -j4 install
+RUN mkdir -p /opt/mzinc && cd /opt/mzinc && git clone https://github.com/MiniZinc/libminizinc.git && \
+    mkdir -p /opt/mzinc/libminizinc/build && cd /opt/mzinc/libminizinc/build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=ON .. && make -j4 install
 
 # Cleaning
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
