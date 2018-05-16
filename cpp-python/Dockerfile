@@ -18,3 +18,11 @@ RUN wget -q -O sonar-scanner.zip https://sonarsource.bintray.com/Distribution/so
  rm sonar-scanner.zip
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+#
+RUN sed -e "s/#alias dir='dir --color=auto'/alias dir='ls -laFh --color=auto'/g" /root/.bashrc
+
+# OGDF
+RUN mkdir -p /opt && cd /opt && git clone https://github.com/ogdf/ogdf.git && \
+    mkdir -p /opt/ogdf/build && cd /opt/ogdf/build && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=ON .. && make install
+
+
