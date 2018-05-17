@@ -4,13 +4,6 @@ LABEL version="0.1"
 
 # Environment
 ENV HOME /root
-ENV SCIP_DIR /opt/scip
-ENV SCIP_VER 5.0.1
-ENV SCIP_TAR scipoptsuite-$SCIP_VER.tgz
-ENV GOR_URL https://github.com/google/or-tools/archive
-ENV GOR_DIR /opt/google-or
-ENV GOR_VER 6.7.1
-ENV GOR_TAR v$GOR_VER.tar.gz
 
 # Update the system
 RUN apt -y update
@@ -47,31 +40,6 @@ RUN wget -q -O sonar-scanner.zip https://sonarsource.bintray.com/Distribution/so
 
 # Visualization
 RUN apt -y install graphviz
-
-# Operations Research
-## SCIP
-RUN mkdir -p /opt/scip
-COPY resources/$SCIP_TAR $SCIP_DIR
-RUN cd $SCIP_DIR && tar zxf $SCIP_TAR
-RUN cd $SCIP_DIR/scipoptsuite-$SCIP_VER && \
-    make -j4 TPI=tny USRCFLAGS=-fPIC USRCXXFLAGS=-fPIC USRCPPFLAGS=-fPIC install # GMP=false READLINE=false
-RUN rm -f $SCIP_DIR/$SCIP_TAR
-
-## Google OR
-RUN mkdir -p $GOR_DIR && cd $GOR_DIR && wget "$GOR_URL/$GOR_TAR"
-RUN cd $GOR_DIR && tar zxf $GOR_TAR
-RUN mkdir -p $GOR_DIR/or-tools-$GOR_VER/build && cd $GOR_DIR/or-tools-$GOR_VER/build && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=ON .. && make -j4 all install
-
-## OGDF (Open Graph)
-RUN mkdir -p /opt && cd /opt && git clone https://github.com/ogdf/ogdf.git && \
-    mkdir -p /opt/ogdf/build && cd /opt/ogdf/build && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=ON .. && make -j4 install
-
-## MiniZinc
-RUN mkdir -p /opt/mzinc && cd /opt/mzinc && git clone https://github.com/MiniZinc/libminizinc.git && \
-    mkdir -p /opt/mzinc/libminizinc/build && cd /opt/mzinc/libminizinc/build && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=ON .. && make -j4 install
 
 # Cleaning
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
