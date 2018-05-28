@@ -27,7 +27,7 @@ And then you can open a Jupyter notebook in your browser: http://localhost:9000
 $ mkdir -p ~/dev/ti
 $ cd ~/dev/ti
 $ git clone https://github.com/transport-intelligence/docker-images.git or-docker-images
-$ cd ~/dev/ti/or-docker-images/cpp-python
+$ cd ~/dev/ti/or-docker-images
 $ docker build -t transportintelligence/operations-research:basis cpp-python/basis
 $ docker build -t transportintelligence/operations-research:solvers cpp-python/solvers
 $ docker build -t transportintelligence/operations-research:beta cpp-python/google-or
@@ -38,7 +38,7 @@ transportintelligence/operations-research	beta                33a1ad533140      
 
 * With SCIP
 ```bash
-$ cd ~/dev/ti/or-docker-images/cpp-python
+$ cd ~/dev/ti/or-docker-images
 $ docker build -t transportintelligence/operations-research:solvers cpp-python/scip
 $ docker build -t transportintelligence/operations-research:google-or-w-scip cpp-python/google-or-w-scip
 ```
