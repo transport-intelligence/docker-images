@@ -4,6 +4,7 @@ LABEL version="0.1"
 
 # Environment
 ENV HOME /root
+ENV GCOV_TMP_DIR /opt/gcovr
 
 # Update the system
 RUN apt -y update
@@ -11,6 +12,7 @@ RUN apt -y update
 # Basic tools
 RUN apt -y install unzip wget htop
 RUN apt -y install git openssh-client
+RUN apt -y install vim
 
 # C++ development
 RUN apt -y install autoconf libtool zlib1g-dev lsb-release
@@ -31,6 +33,13 @@ RUN python -m pip install --upgrade gcovr
 RUN apt -y install python3 python3-pip python3-dev python3-setuptools python3-wheel python3-six
 RUN python3 -m pip install --upgrade pip setuptools virtualenv
 RUN python3 -m pip install --upgrade gcovr
+
+# GCov patch for UTF8 handling
+# That patch process has to be removed once the newer version of GCov is available
+# Reference: http://github.com/gcovr/gcovr/issues/148
+RUN mkdir -p $GCOV_TMP_DIR && cp /usr/local/bin/gcovr $GCOV_TMP_DIR
+COPY resources/gcovr-fix-utf8-issue.patch $GCOV_TMP_DIR
+RUN cd $GCOV_TMP_DIR && patch -p1 gcovr < gcovr-fix-utf8-issue.patch && cp gcovr /usr/local/bin
 
 # Software engineering - Sonar
 RUN wget -q -O sonar-scanner.zip https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.0.3.778-linux.zip && \
