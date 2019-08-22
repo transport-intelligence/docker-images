@@ -16,6 +16,7 @@ RUN mkdir -p /opt && cd /opt && git clone https://github.com/ogdf/ogdf.git && \
 # MiniZinc
 RUN mkdir -p /opt/mzinc && cd /opt/mzinc && git clone https://github.com/MiniZinc/libminizinc.git && \
     mkdir -p /opt/mzinc/libminizinc/build && cd /opt/mzinc/libminizinc/build && \
+    export CXXFLAGS="$CXXFLAGS -fPIC" && \
     cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=ON .. && make -j4 install
 
 # Cleaning
