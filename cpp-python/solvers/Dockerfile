@@ -1,3 +1,7 @@
+#
+# https://github.com/transport-intelligence/docker-images/blob/master/cpp-python/solver/Dockerfile
+#
+
 FROM transportintelligence/operations-research:basis
 MAINTAINER Denis Arnaud <denis.arnaud_github at m4x dot org>
 LABEL version="0.1"

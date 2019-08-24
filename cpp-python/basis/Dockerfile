@@ -1,3 +1,7 @@
+#
+# https://github.com/transport-intelligence/docker-images/blob/master/cpp-python/basis/Dockerfile
+#
+
 FROM ubuntu:18.04
 MAINTAINER Denis Arnaud <denis.arnaud_github at m4x dot org>
 LABEL version="0.1"
@@ -6,13 +10,9 @@ LABEL version="0.1"
 ENV HOME /root
 ENV GCOV_TMP_DIR /opt/gcovr
 
-# Update the system
-RUN apt -y update
-
-# Basic tools
-RUN apt -y install unzip wget htop
-RUN apt -y install git openssh-client
-RUN apt -y install vim
+# Basic packages
+RUN apt -y update && \
+  apt-get -y install apt-utils zip unzip wget htop git openssh-client vim
 
 # C++ development
 RUN apt -y install autoconf libtool zlib1g-dev lsb-release

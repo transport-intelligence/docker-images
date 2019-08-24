@@ -1,45 +1,30 @@
+#
+# https://github.com/transport-intelligence/docker-images/blob/master/cpp-python/google-or/Dockerfile 
+#
 FROM transportintelligence/operations-research:solvers
 MAINTAINER Denis Arnaud <denis.arnaud_github at m4x dot org>
 LABEL version="0.1"
 
 # Environment
 ENV HOME /root
-ENV GOR_URL https://github.com/google/or-tools/archive
+ENV DSTRB ubuntu-18.04
 ENV GOR_DIR /opt/google-or
 ENV GOR_VER 7.3
-ENV GOR_TAR v$GOR_VER.tar.gz
+ENV GOR_RLS 7083
+ENV GOR_TAR or-tools_${DSTRB}_v${GOR_VER}.${GOR_RLS}.tar.gz
+ENV FZC_TAR or-tools_flatzinc_${DSTRB}_v${GOR_VER}.${GOR_RLS}.tar.gz
+ENV GOR_BASE_URL https://github.com/google/or-tools/releases
+ENV GOR_URL ${GOR_BASE_URL}/download/v${GOR_VER}/${GOR_TAR}
+ENV FZC_URL ${GOR_BASE_URL}/download/v${GOR_VER}/${FZC_TAR}
 
 # Update the system
-RUN apt -y update && apt-get -y install zip libgflags-dev libgoogle-glog-dev libgoogle-glog0v5 \
-  libprotobuf-dev libprotobuf10 libprotobuf-c-dev protobuf-c-compiler
-
-# Bazel
-ENV BAZEL_VER 0.28.1
-RUN mkdir -p /opt/bazel && cd /opt/bazel && \
-    wget https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VER/bazel-$BAZEL_VER-installer-linux-x86_64.sh && \
-    chmod +x *.sh && \
-    ./bazel-$BAZEL_VER-installer-linux-x86_64.sh
-
-# Abseil
-ENV PATH $PATH:$HOME/bin
-RUN mkdir -p /opt && git clone https://github.com/abseil/abseil-cpp.git /opt/abseil && \
-  mkdir -p /opt/abseil/build && cd /opt/abseil/build && \
-  cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=ON .. && \
-  make install
-
-# glog
-RUN mkdir -p /opt && git clone https://github.com/google/glog.git /opt/glog && \
-  cd /opt/glog && cmake -H. -Bbuild -G "Unix Makefiles" && \
-  cmake --build build --target install
+RUN apt-get -y update && apt-get -y install build-essential zlib1g-dev
 
 # Google OR
-# https://developers.google.com/optimization/install/cpp/source_linux
-RUN mkdir -p $GOR_DIR && cd $GOR_DIR && wget "$GOR_URL/$GOR_TAR"
-RUN cd $GOR_DIR && tar zxf $GOR_TAR
-RUN mkdir -p $GOR_DIR/or-tools-$GOR_VER/build && \
-    cd $GOR_DIR/or-tools-$GOR_VER/build && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=ON .. && \
-    make all install
+# https://developers.google.com/optimization/install/cpp/linux
+RUN mkdir -p ${GOR_DIR} && cd ${GOR_DIR} && \
+  wget ${GOR_URL} && tar zxf ${GOR_TAR} && rm -f ${GOR_TAR} && \
+  wget ${FZC_URL} && tar zxf ${FZC_TAR} && rm -f ${FZC_TAR}
 
 # Cleaning
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
