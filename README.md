@@ -13,15 +13,21 @@ full Optimization Research (OR) development environments.
 * Docker
 
 # Simple use
+* Download, run and interact with the Docker container
+  featuring Google OR tools:
 ```bash
 $ docker pull transportintelligence/operations-research
-$ docker run --rm -it transportintelligence/operations-research /bin/bash
-$ # docker run -d -p 9000:8888 -v ${PWD}/src/induction:/src -v ${PWD}/data/induction:/data transportintelligence/operations-research
+$ docker run --rm -it transportintelligence/operations-research bash
+root@6f7b01f305d7:~# fzn-or-tools --version
+fzn-or-tools
+Debug build (NDEBUG not #defined)
+root@6f7b01f305d7:~# bcp -v
+bcp 1.65.1
+Mar  6 2018
+root@6f7b01f305d7:~# exit
 ```
-And then you can open a Jupyter notebook in your browser: http://localhost:9000
 
-
-# Build your own Docker image
+# Build your own Docker images
 * Without SCIP
 ```bash
 $ mkdir -p ~/dev/ti
@@ -30,32 +36,43 @@ $ git clone https://github.com/transport-intelligence/docker-images.git or-docke
 $ cd ~/dev/ti/or-docker-images
 $ docker build -t transportintelligence/operations-research:basis cpp-python/basis
 $ docker build -t transportintelligence/operations-research:solvers cpp-python/solvers
-$ docker build -t transportintelligence/operations-research:beta cpp-python/google-or
-$ docker images
-REPOSITORY					TAG                 IMAGE ID            CREATED              SIZE
-transportintelligence/operations-research	beta                33a1ad533140        About a minute ago   1.25GB
+$ docker build -t transportintelligence/operations-research:google-or cpp-python/google-or
 ```
 
 * With SCIP
 ```bash
 $ cd ~/dev/ti/or-docker-images
-$ docker build -t transportintelligence/operations-research:solvers cpp-python/scip
+$ docker build -t transportintelligence/operations-research:scip cpp-python/scip
 $ docker build -t transportintelligence/operations-research:google-or-w-scip cpp-python/google-or-w-scip
 ```
 
-* Push the newly built image to Docker Hub (usually not needed,
-as the images are automatically built everytime there is a commit on GitHub)
+* Tag the Docker image with Google OR, but without SCIP, as the latest
+  for that repository:
 ```bash
-$ docker login
-$ docker push transportintelligence/operations-research:beta
+$ docker tag transportintelligence/operations-research:google-or transportintelligence/operations-research:latest
 ```
 
-* Shutdown the Docker image
+* Build Docker images:
 ```bash
-$ docker ps
-CONTAINER ID        IMAGE					COMMAND                  CREATED             STATUS              PORTS                    NAMES
-431b12a93ccf        transportintelligence/operations-research	"/bin/sh -c 'jupyt..."   4 minutes ago       Up 4 minutes        0.0.0.0:9000->8888/tcp   friendly_euclid
-$ docker kill 431b12a93ccf
+$ docker images | grep "operations-research"
+REPOSITORY                                TAG              IMAGE ID      CREATED          SIZE
+transportintelligence/operations-research google-or-w-scip abc9a60494b6  8 minutes ago    2.02GB
+transportintelligence/operations-research google-or        1ef5e1194305  11 minutes ago   1.72GB
+transportintelligence/operations-research latest           1ef5e1194305  11 minutes ago   1.72GB
+transportintelligence/operations-research scip             eccd4b0d56d3  19 minutes ago   1.93GB
+transportintelligence/operations-research solvers          41c749b47de7  30 minutes ago   1.63GB
+transportintelligence/operations-research basis            69b1cebcf82c  51 minutes ago   1.36GB
 ```
 
+* Push the newly built image to Docker Hub or Quay.io (usually not needed,
+  as the images are automatically built everytime there is a commit on GitHub)
+```bash
+$ docker login # quay.io
+$ docker push transportintelligence/operations-research:basis
+$ docker push transportintelligence/operations-research:solvers
+$ docker push transportintelligence/operations-research:google-or
+$ docker push transportintelligence/operations-research:scip
+$ docker push transportintelligence/operations-research:google-or-w-scip
+$ docker push transportintelligence/operations-research:latest
+```
 
